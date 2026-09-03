@@ -1,0 +1,175 @@
+; ==============================================================================
+; PRESET ĐỒNG THUẬN KÉP M5 + M1 & ĐẢO CHIỀU TỨC THÌ (XAUUSD M5 PRO)
+; Tác giả: Nguyễn Quang Tú (qtusdev) - System Architect & Trading Quant
+; Đặc tính cốt lõi theo yêu cầu của Chủ Tịch:
+;  1. Chạy chuẩn trên Khung M5 (Chart M5 XAUUSD)
+;  2. Chỉ mở lệnh khi CẢ M1 VÀ M5 CÙNG KHỚP TÍN HIỆU ĐỒNG THUẬN (M1 Buy & M5 Buy -> Buy, M1 Sell & M5 Sell -> Sell)
+;  3. Đảo chiều tức thì: Đang Buy mà M1+M5 báo Sell -> Đóng ngay lệnh Buy và mở ngay lệnh Sell mới
+;  4. Quản lý vốn: Lot tự động theo vốn (Auto Lot / Risk % of Capital)
+;  5. Dời SL lên Dương rõ rệt khi đạt 50% TP1, khống chế rủi ro tối đa
+; ==============================================================================
+InpStrategyEngine=0
+InpAutoTrade=1
+InpMagic=990225
+InpDeviationPoints=30
+InpTradeComment=Sniper_M5_M1_Dual
+InpSignalMode=0
+InpExecutionTiming=0
+InpRetestCooldownBars=2
+InpMtfMode=1
+InpEmaFast=9
+InpEmaSlow=21
+InpAllowReverseClose=1
+InpOnePositionOnly=1
+
+; [BỘ LỌC XU HƯỚNG NỀN TẢNG EMA 200]
+InpUseBaselineTrend=1
+InpBaselinePeriod=200
+InpBlockClimaxCandles=1
+InpMaxSignalCandleATR=1.800000
+
+; [BỘ LỌC CHẤT LƯỢNG SCALPING M5]
+InpUseQualityFilter=1
+InpQualityMode=1
+InpFilterTF=5
+InpFilterATRPeriod=14
+InpFilterADXPeriod=14
+InpFilterRSIPeriod=14
+InpMinADX=18.000000
+InpMinEMASepATR=0.080000
+InpBuyRSIMin=50.000000
+InpBuyRSIMax=68.000000
+InpSellRSIMax=50.000000
+InpSellRSIMin=32.000000
+InpUseCandleFilter=1
+InpMaxOppositeWickRatio=0.350000
+InpUseEmaSlopeFilter=1
+InpMinEmaSlopeATR=0.060000
+InpUseMaxEmaDistance=1
+InpMaxEmaDistanceATR=1.350000
+InpUseDailyHighLowFilter=0
+InpMinDistanceToDailyHnLR=0.500000
+InpUseVWAPFilter=0
+InpMinVWAPDistanceATR=0.050000
+InpUseVolumeFilter=0
+InpVolumePeriod=20
+InpMinVolumeRatio=1.050000
+InpQualityMinScore=8
+InpBlockExtremeVolatility=1
+InpExtremeATRRatio=2.500000
+InpUseSpreadFilter=0
+InpMaxSpreadATRRatio=0.500000
+InpUseSpreadSpikeFilter=0
+InpSpreadLookbackTicks=30
+InpMaxSpreadVsAvgMultiplier=1.500000
+
+; [BẢO HIỂM VÙNG LỖ - CHỐNG CƯA CHÂN BÀN]
+InpUseLossZoneShield=1
+InpLossZoneDistanceATR=1.200000
+InpLossZoneCooldownMin=25
+
+; [BỘ LỌC THỜI GIAN]
+InpUseTimeFilter=0
+InpSession1Start=07:00
+InpSession1End=11:30
+InpUseSession2=0
+InpSession2Start=13:30
+InpSession2End=21:00
+InpUseManualNewsPause=0
+InpNewsPauseStart=19:25
+InpNewsPauseEnd=20:30
+InpTradeMonday=1
+InpTradeTuesday=1
+InpTradeWednesday=1
+InpTradeThursday=1
+InpTradeFriday=1
+InpTradeSaturday=0
+InpTradeSunday=0
+
+; [QUẢN LÝ VỐN: LOT THEO VỐN]
+; InpLotMode=0 là Risk 2% vốn / InpLotMode=2 là Auto Lot mỗi 500$ = 0.01 lot
+InpLotMode=0
+InpRiskPercent=2.000000
+InpAutoLotBalanceStep=500.000000
+InpFixedLot=0.010000
+InpMaxFixedLotRiskPercent=1.000000
+InpMinLot=0.010000
+InpMaxLot=5.000000
+InpRejectIfMinLotExceedsRisk=1
+InpMaxMinLotRiskMultiple=10.000000
+InpUseEquity=1
+InpMaxDailyLossPercent=10.000000
+InpMaxTradesPerDay=0
+InpMaxConsecutiveLosses=3
+InpUseLossCooldown=1
+InpCooldownAfterLossMin=3
+InpPauseAfterMaxLossMin=20
+
+; [STOP LOSS & CÁC MỐC TP CHO KHUNG M5]
+InpATRTimeframe=5
+InpATRPeriod=14
+InpATRMultiplier=1.000000
+InpSLMode=1
+InpSwingBars=6
+InpSwingBufferATR=0.300000
+InpSLMultiplierR=1.000000
+InpMinStopPoints=220
+InpTP1_R=1.300000
+InpTP2_R=2.500000
+InpTP3_R=4.000000
+InpTP4_R=6.000000
+InpTP5_R=8.500000
+InpTP6_R=12.000000
+
+; [CHỐT LỜI TỪNG PHẦN]
+InpUsePartialClose=1
+InpTP1_ClosePercent=40.000000
+InpTP2_ClosePercent=30.000000
+InpBreakEvenOnTP1=1
+InpBreakEvenMode=0
+
+; [DỜI STOP LOSS TỪNG NẤC & TRAILING]
+InpEnableTrailing=1
+InpMoveSL_TP1=1
+InpMoveSL_TP2=1
+InpMoveSL_TP3=1
+InpMoveSL_TP4=1
+InpMoveSL_TP5=1
+InpMoveSL_TP6=1
+InpTrailDistanceR=1.200000
+InpTrailUseATRExpansion=1
+InpTrailATRExtraR=0.250000
+
+; [BẢO HIỂM THOÁT SỚM & DỜI SL DƯƠNG RÕ RỆT]
+InpSendHardTPToBroker=0
+InpHardTPIndex=0
+InpUseTimeStop=1
+InpMaxHoldMinutes=30
+InpTimeStopOnlyIfLoss=1
+InpUseEarlyExitOnReverseBar=1
+InpUseMidWayBE=1
+InpMidWayRatio=0.500000
+InpMidWayLockRatio=0.250000
+InpMinLockPoints=40
+
+; [QUẢN LÝ CUỐI TUẦN]
+InpCloseFriday=1
+InpFridayCloseTime=22:00
+
+; [GIAO DIỆN DARK TERMINAL MINIMAL]
+InpChartTheme=0
+InpShowBidAsk=1
+InpShowDashboard=1
+InpDashFontSize=1
+InpDashboardX=12
+InpDashboardY=25
+InpLabelFontSize=1
+InpLabelOffsetBars=12
+InpBarsToDraw=150
+InpDrawRibbon=1
+InpShowRetest=1
+InpRibbonBullColor=13694907
+InpRibbonBearColor=13878782
+InpShowProfitBox=1
+InpShowHistoryDealMarkers=1
+InpTimerMilliseconds=500

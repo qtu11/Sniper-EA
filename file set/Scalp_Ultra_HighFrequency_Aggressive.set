@@ -1,0 +1,106 @@
+; ==============================================================================
+; PRESET SCALPING SIÊU TỐC TẦN SUẤT CAO - LỢI NHUẬN NHANH (ULTRA HIGH FREQUENCY)
+; Tác giả: Nguyễn Quang Tú (qtusdev) - System Architect & Trading Quant
+; Mục tiêu: Bắn lệnh siêu tốc từng Tick giá, quay vòng vốn 30 - 80 lệnh/ngày, chốt lãi chớp nhoáng
+; ==============================================================================
+InpStrategyEngine=0
+InpAutoTrade=1
+InpMagic=990216
+InpDeviationPoints=30
+InpTradeComment=Sniper_Ultra_Scalp
+InpSignalMode=0
+InpExecutionTiming=1
+InpRetestCooldownBars=1
+InpMtfMode=1
+InpEmaFast=9
+InpEmaSlow=21
+InpAllowReverseClose=1
+InpOnePositionOnly=1
+
+; [BỘ LỌC XU HƯỚNG NỀN TẢNG]
+InpUseBaselineTrend=0
+InpBaselinePeriod=200
+InpBlockClimaxCandles=0
+InpMaxSignalCandleATR=1.800000
+
+; [QUẢN LÝ VỐN: RISK 2.0% MỖI LỆNH]
+InpLotMode=0
+InpRiskPercent=2.000000
+InpAutoLotBalanceStep=500.000000
+InpFixedLot=0.010000
+InpMaxFixedLotRiskPercent=3.000000
+InpMaxLot=10.000000
+InpMaxDailyLossPercent=6.000000
+InpMaxConsecutiveLosses=4
+InpMaxSpreadPoints=35
+InpCooldownMinutesAfterLoss=10
+
+; [QUẢN LÝ LỆNH SCALP SIÊU TỐC]
+InpSLMultiplierR=1.000000
+InpMinStopPoints=200
+InpTP1_R=0.700000
+InpTP2_R=1.500000
+InpTP3_R=2.500000
+InpTP4_R=4.000000
+InpTP5_R=6.000000
+InpTP6_R=10.000000
+InpUsePartialClose=1
+InpTP1_ClosePercent=70.000000
+InpTP2_ClosePercent=20.000000
+InpTP3_ClosePercent=10.000000
+InpTP4_ClosePercent=0.000000
+InpTP5_ClosePercent=0.000000
+InpBreakEvenOnTP1=1
+InpBreakEvenMode=0
+InpMinLockPoints=10
+InpUseMidWayBE=1
+InpMidWayRatio=0.500000
+InpMidWayLockRatio=0.200000
+InpEnableTrailing=1
+InpMoveSL_TP1=0
+InpMoveSL_TP2=1
+InpMoveSL_TP3=0
+InpMoveSL_TP4=0
+InpMoveSL_TP5=0
+InpMoveSL_TP6=1
+InpTrailDistanceR=1.000000
+InpTrailUseATRExpansion=1
+InpTrailATRExtraR=0.300000
+
+; [BẢO HIỂM THỜI GIAN SCALP]
+InpUseTimeStop=1
+InpMaxHoldMinutes=7
+InpTimeStopOnlyIfLoss=1
+InpUseEarlyExitOnReverseBar=1
+InpSendHardTPToBroker=0
+
+; [BỘ LỌC ĐỘNG LƯỢNG NÂNG CAO]
+InpUseMomentumFilters=0
+InpFilterRSIPeriod=14
+InpFilterADXPeriod=14
+InpFilterMACDFast=12
+InpFilterMACDSlow=26
+InpFilterMACDSignal=9
+
+; [BỘ LỌC KHOẢNG CÁCH EMA CHỐNG KIỆT SỨC]
+InpUseMaxEmaDistance=1
+InpMaxEmaDistanceATR=1.250000
+
+; [BỘ LỌC THỜI GIAN GIAO DỊCH]
+InpUseTradingHours=1
+InpTradeStartHour=13
+InpTradeEndHour=22
+InpCloseFriday=1
+InpFridayCloseHour=21
+
+; [GIAO DIỆN & TRỰC QUAN HÓA]
+InpShowDashboard=1
+InpDashFontSize=9
+InpLabelFontSize=8
+InpDrawRibbon=1
+InpBarsToDraw=100
+InpLabelOffsetBars=15
+InpShowRetest=1
+InpRibbonBullColor=32768
+InpRibbonBearColor=128
+InpThemeDark=1

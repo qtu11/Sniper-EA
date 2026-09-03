@@ -1,0 +1,133 @@
+; ==============================================================================
+; PRESET INSTITUTIONAL SWING HOLD - BẢO TỒN VỐN / THI QUỸ (PROP FIRM CONSERVATIVE)
+; Tác giả: Nguyễn Quang Tú (qtusdev) - System Architect & Trading Quant
+; Mục tiêu: Kiểm soát sụt giảm nghiêm ngặt (Max Daily DD <= 3%), R:R >= 3.0, Rủi ro 0.5%/lệnh
+; ==============================================================================
+InpStrategyEngine=1
+InpPurePriceActionOnly=1
+InpUseHTFBias=1
+InpHTFBiasTF=16385
+InpFilterAgainstHTFBias=1
+InpHTFLocationTF=15
+InpRangeLookbackBars=60
+InpSetupTF=5
+InpSweepLookbackBars=30
+InpEqualLevelToleranceATR=0.100000
+InpMinDisplacementATR=1.250000
+InpMinDisplacementBodyRatio=0.650000
+InpMinRoomRewardRatio=3.000000
+InpPivotStrength=2
+InpSetupType=0
+InpEntryTF=1
+InpRequireFvgRetest=1
+InpMaxRetestWaitBars=6
+InpFvgRetraceRatio=0.500000
+InpEntryConfirmation=3
+InpMicroBouncePts=15.000000
+InpMinRejectWickRatio=0.250000
+InpStructureTrailBars=20
+InpInvalidationBufferPts=20.000000
+InpUseStructureTrailing=1
+InpHoldFridayForInstitutional=1
+
+; [CẤU HÌNH CỐT LÕI]
+InpAutoTrade=1
+InpMagic=990236
+InpDeviationPoints=30
+InpTradeComment=Sniper_PropFirm
+InpSignalMode=0
+InpExecutionTiming=0
+InpRetestCooldownBars=2
+InpMtfMode=1
+InpEmaFast=9
+InpEmaSlow=21
+InpAllowReverseClose=0
+InpOnePositionOnly=1
+
+; [BỘ LỌC XU HƯỚNG NỀN TẢNG]
+InpUseBaselineTrend=0
+InpBaselinePeriod=200
+InpBlockClimaxCandles=0
+InpMaxSignalCandleATR=1.800000
+
+; [QUẢN LÝ VỐN: LOT THEO VỐN - RỦI RO 0.5%]
+InpLotMode=0
+InpRiskPercent=0.500000
+InpAutoLotBalanceStep=500.000000
+InpFixedLot=0.010000
+InpMaxFixedLotRiskPercent=0.500000
+InpMaxLot=5.000000
+InpMaxDailyLossPercent=3.000000
+InpMaxConsecutiveLosses=3
+InpMaxSpreadPoints=40
+InpCooldownMinutesAfterLoss=30
+
+; [QUẢN LÝ LỆNH ĐA TẦNG VÀ TRAILING]
+InpSLMultiplierR=1.000000
+InpMinStopPoints=400
+InpTP1_R=1.500000
+InpTP2_R=3.000000
+InpTP3_R=0.000000
+InpTP4_R=0.000000
+InpTP5_R=0.000000
+InpTP6_R=0.000000
+InpUsePartialClose=1
+InpTP1_ClosePercent=25.000000
+InpTP2_ClosePercent=25.000000
+InpTP3_ClosePercent=0.000000
+InpTP4_ClosePercent=0.000000
+InpTP5_ClosePercent=0.000000
+InpBreakEvenOnTP1=1
+InpBreakEvenMode=2
+InpMinLockPoints=15
+InpUseMidWayBE=0
+InpMidWayRatio=0.550000
+InpMidWayLockRatio=0.150000
+InpEnableTrailing=1
+InpMoveSL_TP1=0
+InpMoveSL_TP2=1
+InpMoveSL_TP3=0
+InpMoveSL_TP4=0
+InpMoveSL_TP5=0
+InpMoveSL_TP6=0
+InpTrailDistanceR=1.500000
+InpTrailUseATRExpansion=0
+InpTrailATRExtraR=0.500000
+
+; [BẢO HIỂM THỜI GIAN & ĐÓNG LỆNH SỚM]
+InpUseTimeStop=0
+InpMaxHoldMinutes=0
+InpTimeStopOnlyIfLoss=1
+InpUseEarlyExitOnReverseBar=0
+InpSendHardTPToBroker=0
+
+; [BỘ LỌC ĐỘNG LƯỢNG NÂNG CAO]
+InpUseMomentumFilters=0
+InpFilterRSIPeriod=14
+InpFilterADXPeriod=14
+InpFilterMACDFast=12
+InpFilterMACDSlow=26
+InpFilterMACDSignal=9
+
+; [BỘ LỌC KHOẢNG CÁCH EMA CHỐNG KIỆT SỨC]
+InpUseMaxEmaDistance=0
+InpMaxEmaDistanceATR=1.350000
+
+; [BỘ LỌC THỜI GIAN GIAO DỊCH]
+InpUseTradingHours=0
+InpTradeStartHour=1
+InpTradeEndHour=23
+InpCloseFriday=0
+InpFridayCloseHour=21
+
+; [GIAO DIỆN & TRỰC QUAN HÓA]
+InpShowDashboard=1
+InpDashFontSize=9
+InpLabelFontSize=8
+InpDrawRibbon=0
+InpBarsToDraw=100
+InpLabelOffsetBars=15
+InpShowRetest=0
+InpRibbonBullColor=32768
+InpRibbonBearColor=128
+InpThemeDark=1

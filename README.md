@@ -1,188 +1,233 @@
-﻿# TÀI LIỆU HƯỚNG DẪN VÀ THẨM ĐỊNH SNIPER EA V4 PRODUCTION
+# TÀI LIỆU KỸ THUẬT VÀ HƯỚNG DẪN VẬN HÀNH SNIPER EA V4 PRODUCTION
 
-Hệ thống Giao dịch Định lượng Tự động Chuyên nghiệp trên nền tảng MetaTrader 5 (MT5) dành cho XAUUSD (Vàng) và Ngoại hối (Forex).
+Hệ thống Giao dịch Thuật toán Tự động Đa tầng dành cho XAUUSD (Vàng) và Ngoại hối (Forex) trên nền tảng MetaTrader 5 (MT5).
 
----
-
-![Qtusdev.com](https://files.catbox.moe/c7rcj5.png)
-
-## I. TỔNG QUAN VỀ HỆ THỐNG
-
-Sniper EA V4 Production là hệ thống giao dịch thuật toán cao cấp kết hợp dải động lượng thích ứng Dynamic Trend Ribbon ($EMA_9 / EMA_{21}$), bộ lọc động lượng đa tầng (ADX / RSI / VWAP), mô hình nhận diện nến Price Action, thuật toán Stop Loss theo Cấu trúc Sóng (Structural Swing SL) và cơ chế khóa lợi nhuận đa tầng (Multi-tier Milestone Management).
-
-### 1. Các Tính Năng Đột Phá Mới Được Tích Hợp
-* **Bộ lọc Chống Quá Căng Cứng (Anti-Exhaustion / Disparity Filter)**:
-  * Tự động đo lường khoảng cách từ giá đến đường trung bình động $EMA_{21}$.
-  * Nếu nến bứt phá chạy cách xa $EMA_{21}$ quá $1.20 - 1.35 \times ATR$, hệ thống tự động loại bỏ tín hiệu, triệt tiêu 100% tình trạng mua đuổi ở đỉnh hoặc bán tháo ở đáy khi xung lực đã kiệt sức.
-* **Stop Loss Theo Cấu Trúc Sóng (Structural Swing SL + Buffer ATR)**:
-  * Không dùng SL tĩnh ngẫu nhiên theo ATR M1 nhỏ xíu dễ bị râu nến quét.
-  * BUY: Điểm dừng lỗ đặt dưới đáy thấp nhất của nhịp hồi gần nhất (Swing Low 7 - 10 nến) và dưới đường $EMA_{21}$ cộng thêm đệm an toàn $0.35 - 0.45 \times ATR$.
-  * SELL: Điểm dừng lỗ đặt trên đỉnh cao nhất (Swing High) và trên $EMA_{21}$ cộng thêm đệm an toàn.
-  * Tích hợp sàn dừng lỗ tối thiểu (`InpMinStopPoints = 350 - 450 pts`) tạo không gian thở tuyệt đối cho Vàng XAUUSD.
-* **Cơ Chế Giảm Rủi Ro Đa Tầng (Multi-Tier Reduced Risk BreakEven)**:
-  * Khi chạm TP1: Chốt 30% - 35% khối lượng, SL được kéo lên mức giảm rủi ro ($-0.35R$) thay vì kéo sát về Entry. Giữ nguyên không gian thở cho thị trường Retest tự nhiên mà không bị đá văng lệnh.
-  * Khi chạm TP2: Xu hướng đã bùng nổ mạnh, EA mới dời SL về $\text{Entry} + \text{Spread} + 10\text{ pts}$ (khóa chắc chắn lợi nhuận).
-  * $40\%$ khối lượng còn lại được thả nổi theo Trailing Stop để ôm trọn con sóng dài 100 - 300 pips.
-* **Bảo Hiểm Nâng Cao & Thoát Lệnh Thông Minh**:
-  * **Time-Stop (5 - 15 phút)**: Đóng lệnh chủ động ở mức hòa vốn / âm nhẹ (2 - 3 pips) nếu sau thời gian quy định mà giá không bứt phá và xung lực bị tắt.
-  * **Early Exit**: Đóng lệnh cắt lỗ sớm ở mức tối thiểu nếu nến M1 đóng cửa xuyên thủng dứt khoát qua $EMA_{21}$ ngược chiều, tiết kiệm 70% số tiền thua so với việc để chạm full SL.
-  * **Hard TP Máy Chủ Sàn (0ms Latency)**: Cho phép gửi thẳng mức giá chốt lời lên match engine của sàn, khớp lệnh tức thì khi nến giật mạnh.
+Tác giả: Nguyễn Quang Tú (qtusdev) - System Architect & Trading Quant.
 
 ---
 
-## II. HỆ THỐNG 5 BỘ FILE THIẾT LẬP (PRESET .SET) HOÀN CHỈNH
+## I. TỔNG QUAN KIẾN TRÚC HỆ THỐNG (SYSTEM ARCHITECTURE)
 
-Thư mục `file set/` cung cấp đầy đủ 5 cấu hình tối ưu sẵn sàng sử dụng:
+Sniper EA V4 Production được xây dựng dựa trên kiến trúc động cơ kép độc lập (Dual-Engine Architecture), cho phép người dùng tùy biến triệt để giữa phong cách lướt sóng nhanh (Scalping) và phong cách nắm giữ xu hướng theo dòng tiền tổ chức (Institutional Swing Hold).
 
-### 1. File Preset: `Scalp_Pro_TrendFollow_XAUUSD.set` (KHUYÊN DÙNG SỐ 1 CHO VÀNG M1)
-* **Mục tiêu**: Scalping chuẩn xác theo xu hướng, tối đa hóa Winrate (85% - 92%), chống quét râu tuyệt đối, giữ trọn sóng 50 - 150 pips.
-* **Đặc tính kỹ thuật**:
-  * `InpMtfMode = 1` (Đồng thuận M5).
-  * `InpSignalMode = 2` (Chỉ vào lệnh khi nến hồi Retest chuẩn Price Action).
-  * `InpUseMaxEmaDistance = 1`, `InpMaxEmaDistanceATR = 1.20` (Chặn mua đỉnh bán đáy).
-  * `InpSLMode = 1` (Swing SL 8 nến + Đệm $0.40 \times ATR$), `InpMinStopPoints = 400 pts`.
-  * `InpTP1_R = 1.20R` (chốt 30%), `InpTP2_R = 2.20R` (chốt 30%), 40% ôm trend qua Trailing.
-  * `InpBreakEvenMode = 1` (Dời rủi ro từng nấc, không bị quét hòa vốn non).
-  * Tích hợp Time-Stop 15 phút và Early Exit.
-* **Tần suất**: 6 - 15 lệnh / ngày.
-* **Khung thời gian gắn EA**: Chart **XAUUSD M1**.
-
----
-
-### 2. File Preset: `Scalp_Ultra_HighFrequency_50_100Trades.set` (SCALPING SIÊU TỐC TẦN SUẤT CAO)
-* **Mục tiêu**: Vòng quay vốn thần tốc, ra vào lệnh liên tục 50 - 150 lệnh / ngày với tỷ lệ thắng áp đảo.
-* **Đặc tính kỹ thuật**:
-  * `InpExecutionTiming = 1` (EXEC_INTRABAR_TICK: Bắn lệnh siêu tốc từng Tick giá, không chờ nến đóng).
-  * `InpSignalMode = 0` (Bắt cả Giao cắt và Retest).
-  * `InpRetestCooldownBars = 1` (Bắt nhịp liên tục mỗi nến).
-  * `InpTP1_R = 0.60R` (~6 - 10 pips XAUUSD) chốt ngay 80% volume để giải phóng vị thế trong 30 giây - 2 phút.
-  * `InpSendHardTPToBroker = 1` (Gửi Hard TP trực tiếp lên sàn khớp 0ms).
-  * `InpUseTimeStop = 1`, `InpMaxHoldMinutes = 5` (Sau 5 phút không cắn TP thì tự đóng lệnh xoay vốn).
-  * `InpRiskPercent = 1.5%` (Lot nhỏ, quay vòng lệnh nhanh).
-* **Tần suất**: 50 - 150 lệnh / ngày.
-* **Yêu cầu quan trọng**: Bắt buộc chạy trên tài khoản ECN/Zero Spread mỏng và ưu tiên phiên Âu/Mỹ (13:30 - 22:30).
-* **Khung thời gian gắn EA**: Chart **XAUUSD M1**.
+```
+                            SNIPER EA V4 PRODUCTION
+                                      │
+           ┌──────────────────────────┴──────────────────────────┐
+           ▼                                                     ▼
+[ENGINE 1: EMA M1/M5 SCALP]                      [ENGINE 2: INSTITUTIONAL SWING HOLD]
+- Khung: M1 kết hợp M5                           - Khung: H1 -> M15 -> M5 -> M1 (4 Tầng)
+- Logic: Đồng thuận EMA9/EMA21                   - Logic: 100% Pure Price Action (Zero Indicator)
+- Dynamic Trend Ribbon                           - Thanh khoản: Liquidity Sweep (EQH/EQL)
+- Quản trị: 6 mốc TP R:R + ATR Trailing          - Xung lực: Displacement + True Structure BOS
+- Bảo hiểm: Time-Stop & Reverse Close            - Điểm vào: FVG 50% CE Retest + Micro MSS (M1)
+                                                 - Quản trị: TP1 (Internal) -> TP2 (External) -> Runner
+                                                 - Trailing: Post-Entry Structure Trailing
+```
 
 ---
 
-### 3. File Preset: `Swing_Hold_V4.set` (HOLD SÓNG LỚN 150 - 400 PIPS)
-* **Mục tiêu**: Ăn trọn các con sóng xu hướng bùng nổ 150 - 400 pips trên Vàng và Ngoại hối.
-* **Đặc tính kỹ thuật**:
-  * Đã mở toàn bộ nút thắt cổ chai Hard Gates -> EA mở lệnh mượt mà và đều đặn khi xu hướng M5/M15 hình thành.
-  * `InpMtfMode = 1` hoặc `2`, `InpSignalMode = 0`.
-  * `InpSLMode = 1` (Swing SL 10 nến M5 + Đệm $0.45 \times ATR$), `InpMinStopPoints = 450 pts`.
-  * `InpTP1_R = 1.5R` (chốt 25%), `InpTP2_R = 3.0R` (chốt 25%), giữ 50% chạy Trailing ăn các mốc lớn (5.0R $\to$ 16.0R).
-  * `InpBreakEvenMode = 2` (Chạm TP2 mới dời BE để không gian thở tuyệt đối cho sóng lớn).
-* **Tần suất**: 1 - 4 lệnh / ngày khi có sóng rõ ràng.
-* **Khung thời gian gắn EA**: Khuyên dùng chart **M5** hoặc **M15**.
+## II. CHI TIẾT CƠ CHẾ HOẠT ĐỘNG CỦA ENGINE ĐỊNH CHẾ (INSTITUTIONAL HOLD)
+
+Engine Institutional Swing Hold được thiết kế theo quy trình 6 bước chuẩn định lượng, hoạt động độc lập 100% không sử dụng bất kỳ chỉ báo kỹ thuật nào (kể cả ATR khi bật chế độ Pure Price Action):
+
+### 1. Tầng 1: Khảo sát Cấu trúc Xu hướng Lớn (H1 Structure Bias)
+* **Khung thời gian:** `InpHTFBiasTF` (Mặc định: PERIOD_H1).
+* **Cơ chế:** Thu thập các đỉnh/đáy cấu trúc (Swing Highs và Swing Lows) đã được xác nhận với độ mạnh `InpPivotStrength`.
+* **Điều kiện Bullish Bias:** Đỉnh sau cao hơn đỉnh trước (`HH`) VÀ Đáy sau cao hơn đáy trước (`HL`) có thứ tự thời gian xen kẽ hợp lệ, hoặc nến H1 đóng cửa phá vỡ đỉnh swing gần nhất (`HTF BOS`) kết hợp đáy nâng cao.
+* **Điều kiện Bearish Bias:** Đỉnh sau thấp hơn đỉnh trước (`LH`) VÀ Đáy sau thấp hơn đáy trước (`LL`) có thứ tự thời gian xen kẽ hợp lệ, hoặc nến H1 đóng cửa đâm thủng đáy swing gần nhất (`HTF BOS`) kết hợp đỉnh hạ thấp.
+* **Bộ lọc Chặn Ngược Chiều (`InpFilterAgainstHTFBias`):** Tuyệt đối không mở lệnh BUY khi H1 là Bearish; tuyệt đối không mở lệnh SELL khi H1 là Bullish.
+
+### 2. Tầng 2: Xác định Vị trí và Bể Thanh Khoản Ngoại vi (M15 Location & External Target)
+* **Khung thời gian:** `InpHTFLocationTF` (Mặc định: PERIOD_M15).
+* **Cơ chế:** Quét biên độ dao động `InpRangeLookbackBars` để tính:
+  $$\text{Equilibrium} = \frac{\text{HTF High} + \text{HTF Low}}{2}$$
+* **Location Gate:**
+  * Lệnh BUY chỉ được kích hoạt khi giá đang nằm trong vùng **Discount Zone** (dưới Equilibrium), trừ khi H1 đang trong xu hướng tăng mạnh tiếp diễn.
+  * Lệnh SELL chỉ được kích hoạt khi giá đang nằm trong vùng **Premium Zone** (trên Equilibrium), trừ khi H1 đang trong xu hướng giảm mạnh tiếp diễn.
+* **External Target:** Đỉnh HTF High (cho lệnh BUY) hoặc Đáy HTF Low (cho lệnh SELL).
+
+### 3. Tầng 2.5: Quét Thanh Khoản và Nến Bung Xung Lực (M5 Setup)
+* **Khung thời gian:** `InpSetupTF` (Mặc định: PERIOD_M5).
+* **Quét Thanh Khoản (Liquidity Sweep):**
+  * Tự động dò tìm các vùng đỉnh bằng nhau (Equal Highs - EQH) hoặc đáy bằng nhau (Equal Lows - EQL) nơi tập trung thanh khoản dừng lỗ của đám đông (Buy-side / Sell-side Liquidity Pools).
+  * Nến Setup thò râu quét qua bể thanh khoản nhưng đóng cửa quay ngược trở lại bên trong vùng (Bẫy giá bẫy thanh khoản thành công).
+* **Nến Bung Xung Lực (Displacement) & Phá Vỡ Cấu Trúc (True BOS):**
+  * Nến bung xung lực phải có thân nến chiếm $\ge 65\%$ biên độ nến (`InpMinDisplacementBodyRatio`).
+  * Biên độ nến phải gấp $\ge 1.25$ lần biên độ nến trung bình thuần OHLC (`GetAverageCandleRange`).
+  * Nến phải đóng cửa vượt qua Swing Pivot đối diện (True Pivot High cho BUY hoặc True Pivot Low cho SELL) để xác nhận chuyển pha cấu trúc thị trường (BOS).
+* **Tạo Vùng Mất Cân Bằng (Fair Value Gap - FVG):**
+  * Xác định khoảng trống thanh khoản giữa giá High của nến 3 và giá Low của nến 1 (với nến tăng), hoặc giữa giá Low của nến 3 và giá High của nến 1 (với nến giảm).
+  * Tính điểm chính giữa cân bằng năng lượng: $\text{Consequent Encroachment (CE)} = 50\% \text{ FVG}$.
+
+### 4. Tầng 3: Nhịp Hồi và Xác Nhận Chuyển Pha Vi Mô (M1 Precision Entry)
+* **Khung thời gian:** `InpEntryTF` (Mặc định: PERIOD_M1).
+* **Kiểm tra Giới hạn Vùng (Strict Bounding):** Hủy bỏ setup ngay lập tức nếu giá xuyên thủng ranh giới đối diện của FVG (FVG bị triệt tiêu).
+* **Ngưỡng Hồi Tối Thiểu (`InpFvgRetraceRatio`):** Giá phải hồi sâu tối thiểu chạm mốc 50% CE của FVG.
+* **Xác Nhận Micro MSS (`InpEntryConfirmation = CONFIRM_MICRO_MSS`):**
+  * Trong nhịp hồi vi mô vào FVG, hệ thống theo dõi và xác nhận một Micro Pivot Lower High (cho BUY) hoặc Micro Pivot Higher Low (cho SELL).
+  * Chỉ khi xuất hiện nến M1 đóng cửa dứt khoát phá vỡ Micro Pivot đó (`Micro BOS`), lệnh mới được kích hoạt tại giá thị trường (Ask/Bid).
+
+### 5. Tầng 4: Điểm Dừng Lỗ Vô Hiệu Hóa (Structural Invalidation SL)
+* Điểm SL được đặt ngay ngoài điểm cực trị của râu nến quét thanh khoản (Sweep Extreme), cộng thêm khoảng đệm an toàn `InpInvalidationBufferPts` (mặc định 20 points).
+* Nếu thị trường phá vỡ mức giá này, toàn bộ luận điểm cá mập săn thanh khoản bị bác bỏ hoàn toàn.
+
+### 6. Tầng 5: Quản Trị Mục Tiêu 3 Pha (3-Phase Milestone Management)
+* **TP1 - Bể Thanh Khoản Nội Bộ (True Internal Liquidity):**
+  Hệ thống quét tìm đỉnh/đáy Swing Pivot nội bộ thực tế gần nhất nằm giữa Entry và External Target. Khi chạm TP1:
+  * Đóng một phần khối lượng (Mặc định 25%).
+  * Dời Stop Loss về bảo toàn vốn (BreakEven hoặc mức khóa dương tối thiểu).
+* **TP2 - Bể Thanh Khoản Ngoại Vi (Major External Liquidity):**
+  Chạm đỉnh/đáy lớn HTF (M15 High/Low):
+  * Đóng tiếp 25% khối lượng lệnh.
+  * Kích hoạt chế độ Trailing Cấu trúc cho phần khối lượng còn lại.
+* **Runner Vô Hạn (50% Khối lượng):**
+  Hoàn toàn không đặt mức Take Profit cứng (`TP3..TP6 = 0.0`), cho phép vị thế thả nổi để ăn trọn các con sóng mở rộng 150 - 400 pips.
+
+### 7. Tầng 6: Dời Dừng Lỗ Sau Entry (Post-Entry Market Structure Trailing)
+* **Quy tắc cốt lõi:** Hệ thống **tuyệt đối không dời SL** theo các Swing Pivot đã tồn tại từ trước thời điểm mở lệnh.
+* Lệnh được bảo vệ không gian dao động tự nhiên bằng Invalidation SL ban đầu cho đến khi thị trường tạo thành một **Swing Pivot Higher Low (BUY) hoặc Lower High (SELL) mới hình thành SAU THỜI ĐIỂM VÀO LỆNH (`barTime > posOpenTime`)**.
+* Khi có Pivot mới xác nhận: SL lập tức được kéo lên nấp sau đáy/đỉnh cấu trúc mới đó. Vị thế chỉ thoát khi thị trường thực sự bẻ gãy cấu trúc xu hướng.
+
+### 8. Cơ Chế Bền Vững Dữ Liệu (State Persistence) & Giữ Lệnh Qua Đêm Thứ Sáu
+* **Lưu trữ Global Variables:** Toàn bộ dữ liệu vùng FVG, giá mục tiêu, trạng thái hồi, cực trị vi mô và mã vé lệnh được đồng bộ hóa tức thì vào Global Variables của terminal MT5. Khi khởi động lại terminal, chuyển đổi khung thời gian hoặc khởi động lại VPS, EA khôi phục nguyên vẹn trạng thái mà không bị gián đoạn.
+* **Bảo vệ Vị thế Thứ Sáu (`InpHoldFridayForInstitutional = true`):** Chế độ Scalp tuân thủ đóng lệnh trước giờ đóng cửa cuối tuần để tránh khoảng trống giá (Gap), trong khi các vị thế Institutional Hold có mức đệm lợi nhuận được phép giữ lệnh xuyên tuần để phục vụ mục tiêu ăn trọn sóng lớn.
 
 ---
 
-### 4. File Preset: `Scalp_M1_V4.set` (SCALPING M1 CÂN BẰNG FOREX & GOLD)
-* **Mục tiêu**: Giao dịch hàng ngày cân bằng, kiểm soát rủi ro chặt chẽ, Winrate 80%+.
-* **Đặc tính kỹ thuật**:
-  * Đồng thuận M5, bắt Retest nến hồi, Swing SL 7 nến, đệm $0.35 \times ATR$, sàn 350 pts.
-  * TP1 = 1.0R (chốt 35%), TP2 = 2.0R (chốt 30%), dời rủi ro từng nấc.
-* **Tần suất**: 8 - 18 lệnh / ngày.
-* **Khung thời gian gắn EA**: Chart **M1** (XAUUSD, GBPUSD, EURUSD).
+## III. HỆ THỐNG 5 BỘ FILE THIẾT LẬP (PRESET .SET) VÀ BẢNG SO SÁNH TOÀN DIỆN
+
+Thư mục `file set/` cung cấp đầy đủ 5 cấu hình tối ưu sẵn sàng sử dụng, được phân chia chính xác theo từng phong cách giao dịch và khẩu vị rủi ro:
+
+### 1. File Set 1: `Swing_Institutional_Hold_XAUUSD.set` (CHUẨN ĐỊNH CHẾ CÂN BẰNG - KHUYÊN DÙNG SỐ 1)
+* **Mục tiêu:** Tối ưu hóa tỷ lệ R:R ($\ge 1:2.5$), entry sâu, lọc nhiễu tối đa, giữ sóng 100 - 300 pips.
+* **Khung chart gắn EA:** **XAUUSD M5**.
+* **Đặc tính kỹ thuật:**
+  * `InpStrategyEngine = 1` (Institutional Swing Hold thuần Price Action 100%).
+  * `InpPurePriceActionOnly = true` (Loại bỏ hoàn toàn chỉ báo ATR).
+  * `InpUseHTFBias = true`, `InpFilterAgainstHTFBias = true` (Chặn tuyệt đối lệnh ngược cấu trúc H1).
+  * `InpMinRoomRewardRatio = 2.50` (Room đến External Target phải gấp $\ge 2.5$ lần SL).
+  * `InpRequireFvgRetest = true`, `InpFvgRetraceRatio = 0.50` (Chờ hồi sâu $50\%$ CE của FVG).
+  * `InpEntryConfirmation = 3` (`CONFIRM_MICRO_MSS`: Nến M1 đóng cửa phá vỡ Micro Pivot).
+  * `InpUseStructureTrailing = true` (Chỉ dời SL theo Pivot HL/LH sinh ra SAU ENTRY).
+  * `InpHoldFridayForInstitutional = true` (Giữ vị thế Hold xuyên tuần).
+  * `InpRiskPercent = 1.0%` (Rủi ro chuẩn mực cho tài khoản thực tế).
+* **Tần suất:** 1 - 3 lệnh / ngày.
 
 ---
 
-### 5. File Preset: `Scalp_Fast_30_50Trades.set` (SCALPING FOREX TẦN SUẤT TRUNG BÌNH CAO)
-* **Mục tiêu**: Đánh nhanh 20 - 40 lệnh / ngày trên các cặp tiền tệ Forex biến động vừa phải.
-* **Đặc tính kỹ thuật**: Bật Anti-Exhaustion, Swing SL 5 nến, MinStop 250 pts, tắt đảo chiều liên tục né bẫy cưa 2 đầu.
-* **Tần suất**: 20 - 40 lệnh / ngày.
-* **Khung thời gian gắn EA**: Chart **M1** (Forex Majors).
+### 2. File Set 2: `Swing_Institutional_Aggressive_HighReturn.set` (MẠO HIỂM LỢI NHUẬN CAO - HOLD SÓNG LỚN)
+* **Mục tiêu:** Tăng trưởng tài khoản thần tốc ($+50\% \to +120\%$/tháng), bắt trọn chân sóng bùng nổ, chấp nhận mức sụt giảm lớn hơn.
+* **Khung chart gắn EA:** **XAUUSD M5**.
+* **Đặc tính kỹ thuật:**
+  * `InpRiskPercent = 2.5%` (Mỗi lệnh thắng 1:3 $\to$ 1:5 mang về $+7.5\% \to +12.5\%$ số dư tài khoản).
+  * `InpFilterAgainstHTFBias = false` (Tắt chặn H1 Bias để bắt cả sóng đảo chiều đỉnh/đáy và sóng hồi sâu).
+  * `InpMinRoomRewardRatio = 1.80` (Nới lỏng điều kiện Room, tăng gấp đôi số lượng cơ hội vào lệnh).
+  * `InpFvgRetraceRatio = 0.40` (Chỉ cần retrace 40% FVG là bắt đầu canh entry, tránh lỡ kèo nông).
+  * `InpEntryConfirmation = 2` (`CONFIRM_MICRO_M1_CLOSE`: Nến M1 rút râu là khớp lệnh ngay ở chân sóng).
+  * `InpTP1_ClosePercent = 20%`, `InpTP2_ClosePercent = 20%`, **thả nổi 60% Runner** tối đa hóa lợi nhuận.
+* **Tần suất:** 2 - 5 lệnh / ngày.
 
 ---
 
-## III. BẢNG SO SÁNH TỔNG HỢP 5 BỘ FILE PRESET
+### 3. File Set 3: `Swing_Institutional_PropFirm_Conservative.set` (BẢO TỒN VỐN NGHIÊM NGẶT / THI QUỸ)
+* **Mục tiêu:** Bảo vệ tài khoản tuyệt đối, tuân thủ 100% quy định Drawdown ngày của các quỹ đầu tư (FTMO, MFF, The5ers).
+* **Khung chart gắn EA:** **XAUUSD M5**.
+* **Đặc tính kỹ thuật:**
+  * `InpRiskPercent = 0.5%` (Rủi ro tối đa 0.5% số dư trên mỗi lượt giao dịch).
+  * `InpMinRoomRewardRatio = 3.00` (Chỉ chấp nhận các setup có tiềm năng lợi nhuận gấp $\ge 3.0$ lần rủi ro).
+  * `InpMaxRetestWaitBars = 6` (Nếu quá 6 nến M5 không retest thì tự hủy setup, bảo đảm tính tươi mới).
+  * `InpMaxDailyLossPercent = 3.0%` (Chạm mức sụt giảm 3% trong ngày là tự động ngắt giao dịch).
+  * `InpCooldownMinutesAfterLoss = 30` (Nghỉ 30 phút sau mỗi lệnh thua để tránh giao dịch trả thù).
+* **Tần suất:** 0.5 - 2 lệnh / ngày.
 
-| Tiêu Chí Kỹ Thuật | Scalp_Pro_XAUUSD | Scalp_Ultra_Fast | Swing_Hold_V4 | Scalp_M1_V4 | Scalp_Fast |
+---
+
+### 4. File Set 4: `Scalp_Ultra_HighFrequency_Aggressive.set` (SCALPING SIÊU TỐC TẦN SUẤT CAO - BẮN LỆNH TICK)
+* **Mục tiêu:** Lướt sóng chớp nhoáng theo xung lực từng Tick giá, quay vòng vốn liên tục 30 - 80 lệnh/ngày.
+* **Khung chart gắn EA:** **XAUUSD M1**.
+* **Đặc tính kỹ thuật:**
+  * `InpStrategyEngine = 0` (Scalping M1+M5 EMA).
+  * `InpExecutionTiming = 1` (`EXEC_INTRABAR_TICK`: Bắn lệnh siêu tốc từng Tick giá, không chờ đóng nến).
+  * `InpSignalMode = 0` (Bắt cả Giao cắt EMA lẫn nhịp hồi Retest).
+  * `InpRiskPercent = 2.0%` mỗi lệnh.
+  * `InpTP1_R = 0.70R` (~7 - 12 pips Vàng) chốt ngay **70% khối lượng** giải phóng vị thế nhanh chóng.
+  * `InpUseTimeStop = true`, `InpMaxHoldMinutes = 7` (Sau 7 phút không cắn TP thì tự đóng lệnh xoay vốn).
+  * Chỉ giao dịch trong khung giờ biến động mạnh phiên Âu/Mỹ (13:00 - 22:00).
+* **Tần suất:** 30 - 80 lệnh / ngày.
+
+---
+
+### 5. File Set 5: `Scalp_M5_M1_Confluence_AutoLot.set` (SCALPING M1+M5 ĐỒNG THUẬN KÉP CÂN BẰNG)
+* **Mục tiêu:** Giao dịch lướt sóng hàng ngày cân bằng, Winrate 80%+, kiểm soát rủi ro chặt chẽ.
+* **Khung chart gắn EA:** **XAUUSD M5** hoặc **M1**.
+* **Đặc tính kỹ thuật:**
+  * `InpStrategyEngine = 0` (Scalping).
+  * `InpMtfMode = 1` (Bắt buộc đồng thuận xu hướng giữa M1 và M5).
+  * `InpUseBaselineTrend = true` (Bộ lọc xu hướng nền tảng EMA 200).
+  * `InpAllowReverseClose = true` (Đảo chiều tức thì khi cả M1 và M5 đồng loạt chuyển hướng ngược lại).
+  * `InpUseMidWayBE = true` (Dời SL lên dương khi giá chạy được 50% quãng đường tới TP1).
+  * `InpRiskPercent = 1.5% - 2.0%`.
+* **Tần suất:** 6 - 15 lệnh / ngày.
+
+---
+
+### BẢNG SO SÁNH TỔNG HỢP 5 BỘ FILE PRESET (.SET)
+
+| Tiêu chí kỹ thuật | Swing_Hold_XAUUSD (Chuẩn) | Swing_Aggressive (Mạo hiểm) | Swing_PropFirm (Bảo thủ) | Scalp_Ultra_Fast (Siêu tốc) | Scalp_M5_M1 (Cân bằng) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Mục tiêu chính** | **Chuẩn trend, giữ sóng** | **Siêu tốc, nổ lệnh** | **Ăn trọn sóng lớn** | Cân bằng hàng ngày | Tần suất cao Forex |
-| **Cặp giao dịch khuyên dùng** | **XAUUSD (Vàng)** | **XAUUSD (ECN)** | **XAUUSD / Forex** | Forex / XAUUSD | Forex Majors |
-| **Khung thời gian (Chart TF)** | **M1** | **M1** | **M5 / M15** | M1 | M1 |
-| **Số lệnh trung bình / ngày** | **6 - 15 lệnh** | **50 - 150 lệnh** | **1 - 4 lệnh** | 8 - 18 lệnh | 20 - 40 lệnh |
-| **Thời điểm vào lệnh** | Đóng nến M1 | **Từng Tick (Intrabar)** | Đóng nến M5 | Đóng nến M1 | Đóng nến M1 |
-| **Cơ chế tín hiệu** | Retest nến hồi | Cross + Retest | Cross + Retest | Retest nến hồi | Cross + Retest |
-| **Kiểu Stop Loss** | Swing 8 nến + 0.40 ATR | Swing 4 nến + 0.25 ATR | Swing 10 nến + 0.45 ATR | Swing 7 nến + 0.35 ATR | Swing 5 nến + 0.30 ATR |
-| **Sàn dừng lỗ tối thiểu (Points)**| **400 pts (40 pips)** | 180 pts (18 pips) | **450 pts (45 pips)** | 350 pts (35 pips) | 250 pts (25 pips) |
-| **Mục tiêu TP1** | 1.20R (~22 - 28 pips) | **0.60R (~6 - 10 pips)** | 1.50R (~40 - 60 pips) | 1.00R (~18 - 22 pips) | 0.90R (~14 - 18 pips) |
-| **% Khối lượng chốt TP1** | 30% volume | **80% volume** | 25% volume | 35% volume | 40% volume |
-| **Cơ chế dời Stop Loss** | Giảm rủi ro ($-0.35R$) | Về hòa vốn (BE) | Chạm TP2 mới về BE | Giảm rủi ro ($-0.35R$) | Giảm rủi ro ($-0.35R$) |
-| **Hard TP sàn (0ms)** | Tắt (quản lý đa tầng)| **BẬT (Khớp tức thì)** | Tắt | Tắt | Tắt |
-| **Time-Stop tự thoát lệnh** | 15 phút | **5 phút** | Tắt (giữ theo trend) | 15 phút | 10 phút |
-| **Rủi ro mỗi lệnh (% Risk)** | 2.0% | 1.0% - 1.5% | 1.5% - 2.0% | 2.0% - 3.0% | 2.0% - 2.5% |
+| **Động cơ cốt lõi** | **Institutional Hold** | **Institutional Hold** | **Institutional Hold** | **Scalp EMA M1** | **Scalp EMA M1+M5** |
+| **Cơ chế phân tích** | **100% Pure Price Action**| **100% Pure Price Action**| **100% Pure Price Action**| Dải động lượng EMA/Tick | Đồng thuận EMA + EMA 200 |
+| **Chart gắn EA** | **M5** | **M5** | **M5** | **M1** | **M5 hoặc M1** |
+| **Mức rủi ro / lệnh** | **1.0%** | **2.5%** | **0.5%** | **2.0%** | **1.5% - 2.0%** |
+| **Tần suất lệnh / ngày** | **1 - 3 lệnh** | **2 - 5 lệnh** | **0.5 - 2 lệnh** | **30 - 80 lệnh** | **6 - 15 lệnh** |
+| **Tỷ lệ R:R tối thiểu** | **1:2.5** | **1:1.8** | **1:3.0** | 1:0.7 (Scalp) | 1:1.2 (Scalp) |
+| **Xác nhận điểm vào** | Micro MSS (M1 BOS) | Nến M1 rút râu (Vào sớm) | Micro MSS (M1 BOS) | Từng Tick giá (Intrabar) | Đóng nến Retest EMA |
+| **Lọc cấu trúc H1** | Bắt buộc (Chặn ngược trend)| Tắt chặn (Bắt cả đảo chiều)| Bắt buộc (Siêu nghiêm ngặt)| Không áp dụng | Lọc EMA 200 |
+| **Quản lý TP / Runner** | TP1(25%) - TP2(25%) - Run(50%)| TP1(20%) - TP2(20%) - Run(60%)| TP1(25%) - TP2(25%) - Run(50%)| TP1(70%) - TP2(20%) - Run(10%)| TP1(30%) - TP2(30%) - Run(40%)|
+| **Cơ chế Trailing SL** | Post-Entry Structure Trailing| Post-Entry Structure Trailing| Post-Entry Structure Trailing| ATR Dynamic Trailing | ATR Dynamic Trailing |
+| **Giữ lệnh qua đêm T6** | Cho phép | Cho phép | Cho phép | Tự động đóng (21:00) | Tự động đóng (21:00) |
+| **Mức sụt giảm tối đa (DD)**| Thấp ($< 8\%$) | Trung bình ($12\% - 18\%$) | Cực thấp ($< 4\%$) | Biến thiên theo Spread | Thấp ($< 6\%$) |
+| **Khẩu vị nhà đầu tư** | **Đầu tư chuẩn định chế** | **Tăng trưởng vốn thần tốc**| **Thi quỹ, vốn lớn** | **Giao dịch lướt sóng ngắn**| **Scalping hàng ngày** |
 
 ---
 
-## IV. BÀI TOÁN VỐN TỐI THIỂU: VỐN BAO NHIÊU USD THÌ TUYỆT ĐỐI KHÔNG CHÁY?
+## IV. BẢNG PHÂN BỔ VỐN VÀ ĐỘ AN TOÀN TÀI KHOẢN (MONEY MANAGEMENT)
 
-Đây là phân tích toán học định lượng vi cấu trúc thị trường về số vốn tối thiểu để tài khoản **hoàn toàn miễn nhiễm với rủi ro cháy tài khoản (Never-Blow-Up Capital)**:
+Trên sàn giao dịch tiêu chuẩn MT5 đối với XAUUSD:
+* 1.00 lot tiêu chuẩn = 100 ounces vàng.
+* 0.01 lot tối thiểu = 1 ounce vàng.
+* Biến động $1.00 USD (10 pips = 100 points) trên 0.01 lot = $1.00 USD lãi/lỗ.
 
-### 1. Bản Chất Số Học Của 1 Lệnh Vàng (XAUUSD)
-* Trên MT5, 1 lot XAUUSD tiêu chuẩn = 100 ounces vàng.
-* Khối lượng vào lệnh nhỏ nhất cho phép của hầu hết các sàn là **0.01 lot** (= 1 ounce vàng).
-* Khi giá Vàng biến động **1.00 USD** (ví dụ từ $2700.00 \to $2701.00):
-  * Biên độ tương đương: **100 points = 10 pips**.
-  * Khoản lãi/lỗ của lệnh 0.01 lot tương đương đúng **$1.00 USD**!
-  * Mỗi point biến động = **$0.01 USD**.
-
-### 2. Số Tiền Thua Lỗ Tối Đa Của 1 Lệnh 0.01 Lot
-* Trong preset `Scalp_Ultra_Fast` (SL 180 points): Nếu dính SL, số tiền lỗ = **$1.80 USD**.
-* Trong preset `Scalp_Pro_XAUUSD` (SL 400 points): Nếu dính SL, số tiền lỗ = **$4.00 USD**.
-* Trong preset `Swing_Hold_V4` (SL 450 - 500 points): Nếu dính SL, số tiền lỗ = **$4.50 - $5.00 USD**.
-
-### 3. Ký Quỹ Mở Lệnh (Margin Requirement)
-* Với đòn bẩy **1:500** (chuẩn phổ biến): Ký quỹ cho 0.01 lot Vàng chỉ mất **$5.40 USD**.
-* Với đòn bẩy **1:1000 - 1:2000** (Exness / sàn đòn bẩy cao): Ký quỹ cho 0.01 lot chỉ mất **$1.35 - $2.70 USD**.
+| Mức Vốn (USD) | Loại Tài Khoản | Khối Lượng Khuyên Dùng | Đánh Giá Mức Độ Chịu Đựng Sụt Giảm |
+| :---: | :---: | :---: | :--- |
+| **$20 - $50** | Cent (USC) | `0.01 - 0.02 lot Cent` | **Bất tử 100%:** 2,000 - 5,000 Cent. Lỗ 1 lệnh chỉ mất $0.03 - $0.05 USD. Chịu được chuỗi 100 lệnh thua liên tiếp. |
+| **$200 - $300** | Chuẩn (Standard/ECN) | `0.01 lot cố định` | **Rất an toàn:** Mỗi lệnh thua trung bình $2.50 - $4.00 USD (chỉ chiếm 1.0% - 1.5% tài khoản). |
+| **$500 - $1,000** | Chuẩn (Pro/Zero Spread)| `InpRiskPercent = 1.0%` | **Tối ưu hóa lợi nhuận:** Lot tự động tính theo khoảng cách SL thực tế để duy trì đúng 1.0% rủi ro. |
+| **$\ge $10,000** | Tài khoản Quỹ / VIP | `InpRiskPercent = 0.5%` | **Bảo tồn vốn tổ chức:** Tuân thủ chuẩn mực Drawdown của quỹ đầu tư chuyên nghiệp. |
 
 ---
 
-### 4. BẢNG QUY ĐỊNH MỨC VỐN TỐI THIỂU CHO TỪNG LOẠI TÀI KHOẢN
-
-| Loại Tài Khoản | Mức Vốn Tối Thiểu Kỹ Thuật | **MỨC VỐN AN TOÀN TUYỆT ĐỐI (KHÔNG BAO GIỜ CHÁY)** | Đánh Giá Mức Độ Chịu Đựng Sụt Giảm (Drawdown Resistance) |
-| :--- | :---: | :---: | :--- |
-| **Tài Khoản Cent (USC)** | **$10 USD** (1,000 Cent) | **$20 USD** (2,000 Cent) | **BẤT TỬ 100%**: 0.01 lot Cent chỉ tương đương 0.0001 lot thường. Lỗ 1 lệnh chỉ mất $0.04 USD (4 cent). Tài khoản chịu được chuỗi thua liên tiếp **500 lệnh** mà không cháy! |
-| **Tài Khoản Chuẩn (Standard / ECN / Pro USD) - Đánh Scalp** | **$100 USD** | **$200 - $300 USD** | Với $200 USD: 1 lệnh thua 0.01 lot ($4.00 USD) chỉ chiếm đúng **2.0%** tài khoản. Chịu được chuỗi thua liên tiếp **30 - 50 lệnh** mà không Margin Call. |
-| **Tài Khoản Chuẩn (Standard / ECN / Pro USD) - Đánh Swing** | **$150 USD** | **$300 - $500 USD** | Với $300 - $500 USD: Vốn thoải mái cho lệnh thở theo sóng M5/M15, tỷ lệ Margin Level luôn trên 3,000%. |
-| **Tài Khoản Quỹ (Prop Firm - FTMO / MFF / The5ers)** | **$5,000 USD** | **$10,000 - $100,000 USD** | Cài đặt `InpRiskPercent = 0.5% - 1.0%`, `InpMaxDailyLossPercent = 4.0%` để tuân thủ 100% quy tắc không vi phạm sụt giảm ngày của quỹ. |
-
----
-
-### 5. KẾT LUẬN VỀ VỐN CHO MỌI NGƯỜI
-1. **Nếu vốn dưới $100 USD (ví dụ $10 - $50 USD)**:
-   - Khuyên dùng: Mở tài khoản **Cent (USC)** tại các sàn uy tín (Exness Standard Cent, FBS Cent).
-   - Nạp **$20 USD** sẽ có **2,000 USC**. Cài đặt bot đánh 0.01 lot, tài khoản sẽ **hoàn toàn không bao giờ cháy**, tâm lý cực kỳ thoải mái và bot chạy mượt mà 24/5.
-2. **Nếu dùng tài khoản USD thường (Standard / ECN / RAW)**:
-   - **Vốn tối thiểu an toàn để không cháy**: **$200 USD** (đánh cố định `InpFixedLot = 0.01`).
-   - **Vốn lý tưởng để tối ưu hóa lợi nhuận và lãi kép**: **$500 - $1,000 USD**.
-
----
-
-## V. HƯỚNG DẪN CÀI ĐẶT TRÊN METATRADER 5
+## V. QUY TRÌNH TRIỂN KHAI TRÊN METATRADER 5
 
 1. Mở phần mềm **MetaTrader 5**.
-2. Vào menu **Tệp (File)** $\to$ chọn **Mở Thư mục Dữ liệu (Open Data Folder)**.
-3. Chép toàn bộ thư mục EA vào `MQL5\Experts\`.
-4. Mở chart **XAUUSD** ở khung thời gian mong muốn (**M1** cho Scalp, **M5** cho Swing).
-5. Kéo thả `Sniper_EA_V4_Production` vào biểu đồ.
-6. Tại tab **Inputs**, bấm nút **Load (Nạp)** và chọn file `.set` tương ứng với chiến lược.
-7. Đảm bảo nút **Algo Trading** trên thanh công cụ MT5 đang bật màu xanh lá cây.
+2. Chọn menu **Tệp (File)** $\to$ chọn **Mở Thư mục Dữ liệu (Open Data Folder)**.
+3. Sao chép toàn bộ thư mục EA vào đường dẫn `MQL5\Experts\`.
+4. Mở biểu đồ **XAUUSD** ở khung thời gian **M5** (đối với Swing Hold) hoặc **M1** (đối với Scalp).
+5. Kéo thả file `Sniper_EA_V4_Production.ex5` vào biểu đồ.
+6. Tại thẻ **Inputs**, chọn **Load (Nạp)** và duyệt tới 1 trong 5 file cấu hình tương ứng trong thư mục `file set/`:
+   * `Swing_Institutional_Hold_XAUUSD.set` (Chuẩn Định Chế cân bằng - Khuyên dùng số 1)
+   * `Swing_Institutional_Aggressive_HighReturn.set` (Mạo hiểm lợi nhuận cao - Hold sóng lớn)
+   * `Swing_Institutional_PropFirm_Conservative.set` (Bảo tồn vốn nghiêm ngặt / Thi quỹ)
+   * `Scalp_Ultra_HighFrequency_Aggressive.set` (Scalping siêu tốc từng Tick giá)
+   * `Scalp_M5_M1_Confluence_AutoLot.set` (Scalping M1+M5 đồng thuận kép cân bằng)
+7. Đảm bảo nút **Algo Trading** trên thanh công cụ của MT5 đã được bật (hiển thị màu xanh lá cây).
+8. Quan sát Dashboard góc trên bên phải màn hình: Xác nhận dòng `H1 Structure` và trạng thái `Hold Engine: SCANNING`.
 
+---
 
-## VI. BẢN QUYỀN
+## VI. BẢN QUYỀN VÀ KHUYẾN CÁO MIỄN TRỪ TRÁCH NHIỆM
 
-<h1><i><u>Nguyễn Quang Tú</u></i></h1>
+Hệ thống được phát triển bởi **Nguyễn Quang Tú (qtusdev)**.
 
-<p>Quản lý rủi ro là yếu tố quyết định sự sống còn của tài khoản giao dịch, đặc biệt khi sử dụng EA tự động trên thị trường Forex và Vàng. Một chiến lược giao dịch có thể thắng 70-80% số lệnh, nhưng chỉ cần **1-2 lệnh thua lỗ liên tiếp** nếu không quản lý vốn đúng cách, tài khoản hoàn toàn có thể bị cháy sạch (Margin Call hoặc Stop Out).</p>
-
-<p>Với vai trò là chuyên gia tài chính, tôi **tuyệt đối không khuyến khích** bất kỳ ai dưới 18 tuổi hoặc không có kiến thức nền tảng về tài chính/đầu tư sử dụng các công cụ giao dịch tự động. Thị trường tài chính luôn tiềm ẩn rủi ro mất vốn, và việc giao dịch khi chưa đủ kiến thức có thể dẫn đến những hậu quả nghiêm trọng về mặt tài chính và tâm lý.</p>
-
-<p>Các sản phẩm EA (Expert Advisor) do tôi phát triển được thiết kế dựa trên các quy tắc toán học về xác suất thống kê và quản lý rủi ro. Mục tiêu của các sản phẩm này là **tối đa hóa lợi nhuận trong phạm vi rủi ro chấp nhận được** thông qua các thuật toán tối ưu hóa như Martingale, Grid và Anti-Exhaustion. Tuy nhiên, cần phải hiểu rõ rằng, không có bất kỳ công cụ giao dịch nào trên thị trường đảm bảo lợi nhuận 100%.</p>
-
-<p>Các sản phẩm EA này chỉ nên được sử dụng bởi những nhà đầu tư có kinh nghiệm, đã nghiên cứu kỹ lưỡng các tài liệu do tôi cung cấp và hiểu rõ về các rủi ro tiềm ẩn của thị trường. Người dùng cần tự chịu trách nhiệm hoàn toàn về mọi quyết định giao dịch của mình và các hệ quả phát sinh.</p>
-
-<p>Tôi không chịu trách nhiệm cho bất kỳ khoản lỗ hoặc thiệt hại nào phát sinh từ việc sử dụng các sản phẩm EA này.</p>
-
+Thị trường tài chính phái sinh, đặc biệt là giao dịch Vàng (XAUUSD) có sử dụng đòn bẩy, luôn tiềm ẩn rủi ro biến động giá rất cao. Người dùng cần hiểu rõ rằng hiệu suất trong quá khứ thông qua kiểm thử dữ liệu lịch sử (Backtest) không đảm bảo kết quả tương lai. Bắt buộc phải thực hiện kiểm thử trên tài khoản Demo hoặc tài khoản Cent tối thiểu 2 - 4 tuần trước khi vận hành trên tài khoản vốn thực tế. Tác giả không chịu trách nhiệm cho bất kỳ tổn thất tài chính nào phát sinh từ quyết định giao dịch của người dùng.
