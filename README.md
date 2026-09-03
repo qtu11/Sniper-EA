@@ -1,8 +1,9 @@
-# TÀI LIỆU KỸ THUẬT VÀ HƯỚNG DẪN VẬN HÀNH SNIPER EA V4 PRODUCTION
+﻿# TÀI LIỆU KỸ THUẬT VÀ HƯỚNG DẪN VẬN HÀNH SNIPER EA V4 PRODUCTION
 
 Hệ thống Giao dịch Thuật toán Tự động Đa tầng dành cho XAUUSD (Vàng) và Ngoại hối (Forex) trên nền tảng MetaTrader 5 (MT5).
 
 Tác giả: Nguyễn Quang Tú (qtusdev) - System Architect & Trading Quant.
+
 
 ---
 

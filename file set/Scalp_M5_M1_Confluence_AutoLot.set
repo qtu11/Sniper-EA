@@ -22,11 +22,13 @@ InpEmaSlow=21
 InpAllowReverseClose=1
 InpOnePositionOnly=1
 
-; [BỘ LỌC XU HƯỚNG NỀN TẢNG EMA 200]
+; [BỘ LỌC XU HƯỚNG NỀN TẢNG EMA 200 & KHOẢNG CÁCH EMA]
 InpUseBaselineTrend=1
 InpBaselinePeriod=200
-InpBlockClimaxCandles=1
-InpMaxSignalCandleATR=1.800000
+InpBlockClimaxCandles=0
+InpMaxSignalCandleATR=2.500000
+InpUseMaxEmaDistance=0
+InpMaxEmaDistanceATR=2.500000
 
 ; [BỘ LỌC CHẤT LƯỢNG SCALPING M5]
 InpUseQualityFilter=1
