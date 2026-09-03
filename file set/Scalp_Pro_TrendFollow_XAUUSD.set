@@ -1,11 +1,10 @@
 ﻿; Preset Đỉnh Cao Scalping Trend-Following & Hold Sóng Vàng (XAUUSD Pro) cho Sniper EA V4 Production
 ; Tác giả: Nguyễn Quang Tú (qtusdev)
-; Triệt tiêu hoàn toàn mua đỉnh bán đáy, SL bọc ngoài Swing Low/High, dời rủi ro từng tầng giữ trọn sóng
 InpAutoTrade=1
 InpMagic=990217
 InpDeviationPoints=30
 InpTradeComment=Sniper_XAU_ProTrend
-InpSignalMode=2
+InpSignalMode=0
 InpExecutionTiming=0
 InpRetestCooldownBars=2
 InpMtfMode=1
@@ -21,34 +20,34 @@ InpFilterTF=5
 InpFilterATRPeriod=14
 InpFilterADXPeriod=14
 InpFilterRSIPeriod=14
-InpMinADX=16.000000
-InpMinEMASepATR=0.080000
-InpBuyRSIMin=51.000000
-InpBuyRSIMax=67.000000
-InpSellRSIMax=49.000000
-InpSellRSIMin=33.000000
+InpMinADX=14.000000
+InpMinEMASepATR=0.060000
+InpBuyRSIMin=49.000000
+InpBuyRSIMax=69.000000
+InpSellRSIMax=51.000000
+InpSellRSIMin=31.000000
 InpUseCandleFilter=1
-InpMaxOppositeWickRatio=0.380000
+InpMaxOppositeWickRatio=0.450000
 InpUseEmaSlopeFilter=1
 InpUseMaxEmaDistance=1
-InpMaxEmaDistanceATR=1.200000
-InpUseDailyHighLowFilter=1
-InpMinDistanceToDailyHnLR=1.000000
-InpUseVWAPFilter=1
+InpMaxEmaDistanceATR=1.350000
+InpUseDailyHighLowFilter=0
+InpMinDistanceToDailyHnLR=0.500000
+InpUseVWAPFilter=0
 InpMinVWAPDistanceATR=0.050000
 InpUseVolumeFilter=0
 InpVolumePeriod=20
 InpMinVolumeRatio=1.050000
-InpQualityMinScore=8
+InpQualityMinScore=6
 InpBlockExtremeVolatility=1
-InpExtremeATRRatio=2.200000
+InpExtremeATRRatio=2.500000
 InpUseSpreadFilter=0
 InpMaxSpreadATRRatio=0.500000
 InpUseSpreadSpikeFilter=0
 InpSpreadLookbackTicks=30
 InpMaxSpreadVsAvgMultiplier=1.500000
 
-; Bộ lọc thời gian (Tập trung phiên Âu & Mỹ có biến động xu hướng mạnh)
+; Bộ lọc thời gian (Tắt để chạy 24/5 linh hoạt)
 InpUseTimeFilter=0
 InpSession1Start=07:00
 InpSession1End=11:30
@@ -80,28 +79,28 @@ InpMaxDailyLossPercent=10.000000
 InpMaxTradesPerDay=0
 InpMaxConsecutiveLosses=3
 InpUseLossCooldown=1
-InpCooldownAfterLossMin=3
-InpPauseAfterMaxLossMin=20
+InpCooldownAfterLossMin=2
+InpPauseAfterMaxLossMin=15
 
-; Cấu trúc Stop Loss Cấu Trúc Sóng (Swing Low/High + Buffer ATR + Sàn 400 pts)
+; Cấu trúc Stop Loss Cấu Trúc Sóng
 InpATRTimeframe=1
 InpATRPeriod=14
-InpATRMultiplier=1.250000
+InpATRMultiplier=1.200000
 InpSLMode=1
-InpSwingBars=8
-InpSwingBufferATR=0.400000
-InpSLMultiplierR=1.600000
-InpMinStopPoints=400
-InpTP1_R=1.200000
-InpTP2_R=2.200000
-InpTP3_R=3.500000
-InpTP4_R=5.000000
-InpTP5_R=7.000000
-InpTP6_R=10.000000
+InpSwingBars=7
+InpSwingBufferATR=0.350000
+InpSLMultiplierR=1.500000
+InpMinStopPoints=350
+InpTP1_R=1.000000
+InpTP2_R=2.000000
+InpTP3_R=3.000000
+InpTP4_R=4.500000
+InpTP5_R=6.500000
+InpTP6_R=9.000000
 
-; Chốt lời từng phần & Cơ chế Giảm rủi ro (Chốt 30% tại TP1, chốt 30% tại TP2, 40% ôm trọn trend)
+; Chốt lời từng phần
 InpUsePartialClose=1
-InpTP1_ClosePercent=30.000000
+InpTP1_ClosePercent=35.000000
 InpTP2_ClosePercent=30.000000
 InpBreakEvenOnTP1=1
 InpBreakEvenMode=1
@@ -114,9 +113,9 @@ InpMoveSL_TP3=1
 InpMoveSL_TP4=1
 InpMoveSL_TP5=1
 InpMoveSL_TP6=1
-InpTrailDistanceR=1.800000
+InpTrailDistanceR=1.500000
 InpTrailUseATRExpansion=1
-InpTrailATRExtraR=0.350000
+InpTrailATRExtraR=0.300000
 
 ; Bảo hiểm nâng cao & Thoát lệnh thông minh
 InpSendHardTPToBroker=0

@@ -1,6 +1,5 @@
 ﻿; Preset Ultra High-Frequency Scalping (50 - 150 Lệnh / Ngày Siêu Tốc) cho Sniper EA V4 Production
 ; Tác giả: Nguyễn Quang Tú (qtusdev)
-; Chuyên biệt: Bắt xung lực từng Tick (Intrabar), Hard TP sàn (0ms), Time-Stop 5 phút, Early Exit chống âm
 InpAutoTrade=1
 InpMagic=990218
 InpDeviationPoints=30
@@ -8,7 +7,7 @@ InpTradeComment=Sniper_UltraFast
 InpSignalMode=0
 InpExecutionTiming=1
 InpRetestCooldownBars=1
-InpMtfMode=1
+InpMtfMode=0
 InpEmaFast=9
 InpEmaSlow=21
 InpAllowReverseClose=0
@@ -27,19 +26,19 @@ InpBuyRSIMin=48.000000
 InpBuyRSIMax=72.000000
 InpSellRSIMax=52.000000
 InpSellRSIMin=28.000000
-InpUseCandleFilter=1
+InpUseCandleFilter=0
 InpMaxOppositeWickRatio=0.500000
 InpUseEmaSlopeFilter=1
 InpUseMaxEmaDistance=1
-InpMaxEmaDistanceATR=1.350000
+InpMaxEmaDistanceATR=1.500000
 InpUseDailyHighLowFilter=0
 InpMinDistanceToDailyHnLR=0.500000
-InpUseVWAPFilter=1
+InpUseVWAPFilter=0
 InpMinVWAPDistanceATR=0.020000
 InpUseVolumeFilter=0
 InpVolumePeriod=20
 InpMinVolumeRatio=1.050000
-InpQualityMinScore=5
+InpQualityMinScore=4
 InpBlockExtremeVolatility=1
 InpExtremeATRRatio=2.500000
 InpUseSpreadFilter=0
@@ -66,7 +65,7 @@ InpTradeFriday=1
 InpTradeSaturday=0
 InpTradeSunday=0
 
-; Quản lý vốn Micro-Scalping (Lot nhỏ, quay vòng lệnh nhanh)
+; Quản lý vốn Micro-Scalping
 InpLotMode=0
 InpRiskPercent=1.500000
 InpFixedLot=0.010000
