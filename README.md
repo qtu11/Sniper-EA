@@ -151,7 +151,7 @@ Thư mục `file set/` cung cấp đầy đủ 5 cấu hình tối ưu sẵn sà
 
 ---
 
-### 5. KẾT LUẬN VỀ VỐN CHO CHỦ TỊCH
+### 5. KẾT LUẬN VỀ VỐN CHO MỌI NGƯỜI
 1. **Nếu vốn dưới $100 USD (ví dụ $10 - $50 USD)**:
    - Khuyên dùng: Mở tài khoản **Cent (USC)** tại các sàn uy tín (Exness Standard Cent, FBS Cent).
    - Nạp **$20 USD** sẽ có **2,000 USC**. Cài đặt bot đánh 0.01 lot, tài khoản sẽ **hoàn toàn không bao giờ cháy**, tâm lý cực kỳ thoải mái và bot chạy mượt mà 24/5.
@@ -170,3 +170,19 @@ Thư mục `file set/` cung cấp đầy đủ 5 cấu hình tối ưu sẵn sà
 5. Kéo thả `Sniper_EA_V4_Production` vào biểu đồ.
 6. Tại tab **Inputs**, bấm nút **Load (Nạp)** và chọn file `.set` tương ứng với chiến lược.
 7. Đảm bảo nút **Algo Trading** trên thanh công cụ MT5 đang bật màu xanh lá cây.
+
+
+## VI. BẢN QUYỀN
+
+<h1><i><u>Nguyễn Quang Tú</u></i></h1>
+
+<p>Quản lý rủi ro là yếu tố quyết định sự sống còn của tài khoản giao dịch, đặc biệt khi sử dụng EA tự động trên thị trường Forex và Vàng. Một chiến lược giao dịch có thể thắng 70-80% số lệnh, nhưng chỉ cần **1-2 lệnh thua lỗ liên tiếp** nếu không quản lý vốn đúng cách, tài khoản hoàn toàn có thể bị cháy sạch (Margin Call hoặc Stop Out).</p>
+
+<p>Với vai trò là chuyên gia tài chính, tôi **tuyệt đối không khuyến khích** bất kỳ ai dưới 18 tuổi hoặc không có kiến thức nền tảng về tài chính/đầu tư sử dụng các công cụ giao dịch tự động. Thị trường tài chính luôn tiềm ẩn rủi ro mất vốn, và việc giao dịch khi chưa đủ kiến thức có thể dẫn đến những hậu quả nghiêm trọng về mặt tài chính và tâm lý.</p>
+
+<p>Các sản phẩm EA (Expert Advisor) do tôi phát triển được thiết kế dựa trên các quy tắc toán học về xác suất thống kê và quản lý rủi ro. Mục tiêu của các sản phẩm này là **tối đa hóa lợi nhuận trong phạm vi rủi ro chấp nhận được** thông qua các thuật toán tối ưu hóa như Martingale, Grid và Anti-Exhaustion. Tuy nhiên, cần phải hiểu rõ rằng, không có bất kỳ công cụ giao dịch nào trên thị trường đảm bảo lợi nhuận 100%.</p>
+
+<p>Các sản phẩm EA này chỉ nên được sử dụng bởi những nhà đầu tư có kinh nghiệm, đã nghiên cứu kỹ lưỡng các tài liệu do tôi cung cấp và hiểu rõ về các rủi ro tiềm ẩn của thị trường. Người dùng cần tự chịu trách nhiệm hoàn toàn về mọi quyết định giao dịch của mình và các hệ quả phát sinh.</p>
+
+<p>Tôi không chịu trách nhiệm cho bất kỳ khoản lỗ hoặc thiệt hại nào phát sinh từ việc sử dụng các sản phẩm EA này.</p>
+
