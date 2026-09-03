@@ -137,7 +137,7 @@ Khi $60\%$ vị thế đã được hiện thực hóa lợi nhuận và $40\%$ 
 
 ---
 
-## 6. KẾT LUẬN & KHUYẾN NGHỊ VẬN HÀNH CHO CHỦ TỊCH
+## 6. KẾT LUẬN & KHUYẾN NGHỊ VẬN HÀNH
 
 1. **Khuyến nghị cho Scalping tối đa Winrate (`Scalp_M1_V4.set`)**:
    - Đây là bộ tham số cân bằng hoàn hảo nhất giữa tần suất lệnh (8 - 15 lệnh/ngày) và xác suất thắng ($>85\%$).
